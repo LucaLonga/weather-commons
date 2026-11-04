@@ -1,4 +1,4 @@
-# 22 · OtherWeather
+# 22 · Maintained Ice, Presena 2008–2026
 
 Author: Luca · Started: 2026-11-02 · Status: sketch · Stack: static HTML + JS
 
@@ -6,12 +6,12 @@ A first page that asks which weather goes uncounted: whose rain, heat or wind ne
 
 ## Run
 
-Online, once published: https://LucaLonga.github.io/weather-commons/22-otherweather/
+Online, once published: https://LucaLonga.github.io/weather-commons/22-maintained-ice-presena-2008-2026/
 
 On your computer:
 
 ```bash
-cd sketches/22-otherweather
+cd sketches/22-maintained-ice-presena-2008-2026
 python -m http.server 8000
 ```
 
