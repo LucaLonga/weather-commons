@@ -33,7 +33,8 @@ python -m http.server 8090
 
 | File | What it is |
 | --- | --- |
-| `index.html` | the page |
+| `index.html` | the overview: Event, Simulate, Situate, Narrate, Sources and limits |
+| `explore.html` | prototype, v0: the explorable view of the evidence (stack of summers, claims ledger, melt model) |
 | `data/years.json` | one record per summer: documented, claimed and calculated areas, events, pending tests |
 | `data/claims.json` | statements by others, with status (supported, published, pending, tension, unverifiable) |
 | `data/assertions.json` | what the sketch itself asserts, with confidence and limits |

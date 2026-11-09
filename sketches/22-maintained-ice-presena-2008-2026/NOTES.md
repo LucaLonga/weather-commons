@@ -15,6 +15,7 @@ Read this before working on the sketch. Newest first.
 
 ## Decisions
 
+- 2026-11-09 · index.html is the overview from the template; explore.html is the prototype explorable view. Folder renamed from 22-otherweather.
 - 2026-11-04 · Two tracks: this sketch follows the workshop's format; the full investigation lives on my own site. Results move here only when small, checked and peer-reviewed.
 - 2026-11-04 · Evidence labels follow sketch 03: Documented, Reported, Observed, Reanalysed, Calculated, Synthetic, Cartographic, Interpretive, Not known.
 - 2026-11-04 · Melt rule: enhanced temperature-index (temperature + albedo-weighted sunlight), because albedo is the main thing a cover changes and station data rarely include a full energy balance.
