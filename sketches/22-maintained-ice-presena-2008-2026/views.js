@@ -158,7 +158,7 @@
       "Converted to ice, new fleece keeps about " + step.toFixed(1) + " m in this summer" + (stepObs ? "; the step seen after summer 2010 was about " + stepObs.value.join("–") + " m " + tag("Documented") + src("s2") : "") + ". The parameters were not tuned to match.";
     box.appendChild(p);
     var f = document.createElement("p"); f.className = "small";
-    f.innerHTML = tag("Calculated") + tag(kind) + "Weather: " + esc(label) + ". Melt per day = 24 × (" + P.tf + " × T + " + P.srf + " × (1 − albedo) × sunlight) when T > " + P.tt + " °C (enhanced temperature-index model; factors still to check against the paper)." + src("s7") + " Albedos: " + surf.map(function (s) { return s.label + " " + s.a + " (" + esc(s.why) + ")"; }).join("; ") + ". Left out: wind, rain, summer snow, slope, shade, ice flow, insulation, grooming and snowmaking.";
+    f.innerHTML = tag("Calculated") + tag(kind) + "Weather: " + esc(label) + ". Melt per day = 24 × (" + P.tf + " × T + " + P.srf + " × (1 − albedo) × sunlight) when T > " + P.tt + " °C (enhanced temperature-index model, an hourly rule applied here to daily means; factors still to check against the paper)." + src("s7") + " Albedos: " + surf.map(function (s) { return s.label + " " + s.a + " (" + esc(s.why) + ")"; }).join("; ") + ". Left out: wind, rain, summer snow, slope, shade, ice flow, insulation, grooming and snowmaking.";
     box.appendChild(f);
   };
 
@@ -183,10 +183,11 @@
     var byY = {}; rows.forEach(function (r) { byY[r.y] = r; });
 
     // A · per summer
-    var W = 680, H = 190, x0 = 46, x1 = 664, y0 = 160, y1 = 14, MAXS = 3;
+    var W = 680, H = 196, x0 = 46, x1 = 664, y0 = 166, y1 = 22, MAXS = 3;
     var svg = el("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": "Height kept by the cover each summer, 2008 to 2026" }, box);
     var px = function (y) { return x0 + (x1 - x0) * (y - 2008 + 0.5) / 19; }, py = function (m) { return y0 - (y0 - y1) * m / MAXS; };
     for (var m = 0; m <= MAXS; m++) { el("line", { x1: x0, x2: x1, y1: py(m), y2: py(m), stroke: "currentColor", opacity: m ? 0.12 : 0.5 }, svg); text(svg, x0 - 6, py(m) + 4, m + " m", { "text-anchor": "end", "font-size": 10, opacity: 0.7 }); }
+    text(svg, x0, 10, "metres of ice kept in place, per summer", { "font-size": 10, opacity: 0.8 });
     hist.forEach(function (r) {
       el("line", { x1: px(r.y), x2: px(r.y), y1: py(r.lo), y2: py(r.hi), stroke: "currentColor", "stroke-width": 7, opacity: 0.3 }, svg);
       el("line", { x1: px(r.y) - 6, x2: px(r.y) + 6, y1: py(r.mid), y2: py(r.mid), stroke: "currentColor", "stroke-width": 2 }, svg);
@@ -199,14 +200,15 @@
 
     // B · accumulated, with a year slider and a cross-section
     var wrap = document.createElement("div"); wrap.className = "plinth"; box.appendChild(wrap);
-    var W2 = 680, H2 = 230, X0 = 46, X1 = 664, Y0 = 200, Y1 = 14, MAXC = 70;
+    var W2 = 680, H2 = 240, X0 = 46, X1 = 664, Y0 = 210, Y1 = 24, MAXC = 70;
     var s2 = el("svg", { viewBox: "0 0 " + W2 + " " + H2, role: "img", "aria-label": "Accumulated plinth height 2008 to 2035" }, wrap);
     var qx = function (y) { return X0 + (X1 - X0) * (y - 2008) / (2035 - 2008); }, qy = function (m) { return Y0 - (Y0 - Y1) * Math.min(m, MAXC) / MAXC; };
     for (var mm = 0; mm <= MAXC; mm += 10) { el("line", { x1: X0, x2: X1, y1: qy(mm), y2: qy(mm), stroke: "currentColor", opacity: mm ? 0.12 : 0.5 }, s2); text(s2, X0 - 6, qy(mm) + 4, mm + " m", { "text-anchor": "end", "font-size": 10, opacity: 0.7 }); }
+    text(s2, X0, Y1 - 2, "metres of ice, accumulated since 2008", { "font-size": 10, opacity: 0.8 });
     [2008, 2013, 2018, 2023, 2026, 2030, 2035].forEach(function (y) { text(s2, qx(y), Y0 + 14, y, { "text-anchor": "middle", "font-size": 10, opacity: 0.8 }); });
     el("rect", { x: qx(2026), y: Y1, width: qx(2035) - qx(2026), height: Y0 - Y1, fill: "currentColor", opacity: 0.05 }, s2);
     text(s2, qx(2026) + 6, Y1 + 12, "projection: 2016–2024 summers repeated", { "font-size": 10, opacity: 0.7 });
-    text(s2, X0 + 8, Y1 + 12, "straight by construction: each summer is simply added", { "font-size": 10, opacity: 0.7 });
+    text(s2, X0 + 8, Y1 + 26, "straight by construction: each summer is simply added", { "font-size": 10, opacity: 0.7 });
     function band(list, dash) {
       var top = list.map(function (r, i) { return (i ? "L" : "M") + qx(r.y).toFixed(1) + " " + qy(r.cHi).toFixed(1); }).join(" ");
       var bot = list.slice().reverse().map(function (r) { return "L" + qx(r.y).toFixed(1) + " " + qy(r.cLo).toFixed(1); }).join(" ");
@@ -250,7 +252,7 @@
     box.appendChild(lin);
     box.appendChild(note);
     var lim = document.createElement("p"); lim.className = "small";
-    lim.innerHTML = tag("Calculated") + "Same melt model as above (not tuned); m w.e. converted to m of ice at " + (dens * 1000) + " kg/m³. Assumes the same patch covered every summer, 28 June to 14 September. Not a measurement: an upper limit of what the covers could have kept, if nothing else moved the ice. " + tag("Synthetic") + "2027–2035 repeat the 2016–2024 summers; no warming trend is added.";
+    lim.innerHTML = tag("Calculated") + "Units: metres of ice. Check: the model melts about 3 cm w.e. a day on bare ice in summer; AINEVA measured 123 cm w.e. in the 30 days from 31 July 2010 (about 4 cm a day)" + src("s2") + ". Same melt model as above (not tuned); m w.e. converted to m of ice at " + (dens * 1000) + " kg/m³. Assumes the same patch covered every summer, 28 June to 14 September. Not a measurement: an upper limit of what the covers could have kept, if nothing else moved the ice. " + tag("Synthetic") + "2027–2035 repeat the 2016–2024 summers; no warming trend is added.";
     box.appendChild(lim);
   };
 
