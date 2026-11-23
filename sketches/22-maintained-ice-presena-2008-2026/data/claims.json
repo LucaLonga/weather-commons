@@ -78,7 +78,7 @@
    "text": "Covered area 40,000 m2 (2014) rising to 110,000 m2 (2020-2021).",
    "who": "Operator",
    "status": "tension",
-   "test": "Sentinel-2, preliminary, not validated (v3.5, 23 Nov 2026). The cover is visible every summer 2016-2026. Visible area (lower-upper, m2): 2016 26,000-59,000 vs claim 50,000 (within range); 2017 27,000-52,000 vs 65,000; 2019 9,000-53,000 vs 100,000; 2020 5,000-88,000 vs 110,000; 2021 31,000-102,000 vs 110,000. Earlier runs (16 Nov) gave lower values; results changed as cloud, shadow, rock and snow errors were fixed. Possible reasons for the gap: fabric vs visible area, sheets under snow or in shadow, covers outside the zone. Also in tension with C02. Documented areas before: 28,000 (2008), 37,300 (2009), 76,400 (2010; about 70,000 in the 2013 thesis), 57,800 (2011).",
+   "test": "Sentinel-2, preliminary, not validated (v3.6, 23 Nov 2026; same values as v3.5). The cover is visible every summer 2016-2026. Visible area (lower-upper, m2): 2016 26,000-59,000 vs claim 50,000 (within range); 2017 27,000-52,000 vs 65,000; 2019 9,000-53,000 vs 100,000; 2020 5,000-88,000 vs 110,000; 2021 31,000-102,000 vs 110,000. Earlier runs (16 Nov) gave lower values; results changed as cloud, shadow, rock and snow errors were fixed. Possible reasons for the gap: fabric vs visible area, sheets under snow or in shadow, covers outside the zone. Also in tension with C02. Documented areas before: 28,000 (2008), 37,300 (2009), 76,400 (2010; about 70,000 in the 2013 thesis), 57,800 (2011).",
    "source": "s1"
   },
   {

@@ -72,15 +72,18 @@
       [0, 30, 61, 92, 122].forEach(function (m, i) { el("line", { x1: px(m), x2: px(m), y1: y0, y2: y0 + 3, stroke: "currentColor", opacity: 0.4 }, svg); text(svg, px(m) + 2, y0 + 12, ["Jun", "Jul", "Aug", "Sep", "Oct"][i], { "font-size": 9, opacity: 0.6 }); });
       var d = "", prev = null;
       pts.forEach(function (p) { d += (prev && p.x - prev.x <= 16 ? "L" : "M") + px(p.x).toFixed(1) + " " + py(p.v).toFixed(1) + " "; prev = p; });
-      el("path", { d: d, fill: "none", stroke: "currentColor", "stroke-width": 1.5, "stroke-linejoin": "round" }, svg);
-      pts.forEach(function (p) { el("circle", { cx: px(p.x), cy: py(p.v), r: 1.8, fill: "currentColor" }, svg).appendChild(Object.assign(document.createElementNS(NS, "title"), { textContent: p.d + ": " + fmt(p.v) + " m²" })); });
+      el("path", { d: d, fill: "none", stroke: "currentColor", "stroke-width": 0.8, opacity: 0.35, "stroke-linejoin": "round" }, svg);
+      var med = pts.map(function (p, i) { var w = [pts[i - 1], p, pts[i + 1]].filter(function (q) { return q && Math.abs(q.x - p.x) <= 16; }).map(function (q) { return q.v; }).sort(function (a, b) { return a - b; }); return { x: p.x, v: w[Math.floor(w.length / 2)] }; });
+      var dm = "", pm = null; med.forEach(function (p) { dm += (pm && p.x - pm.x <= 16 ? "L" : "M") + px(p.x).toFixed(1) + " " + py(p.v).toFixed(1) + " "; pm = p; });
+      el("path", { d: dm, fill: "none", stroke: "currentColor", "stroke-width": 2, "stroke-linejoin": "round" }, svg);
+      pts.forEach(function (p) { el("circle", { cx: px(p.x), cy: py(p.v), r: 1.4, fill: "currentColor", opacity: 0.55 }, svg).appendChild(Object.assign(document.createElementNS(NS, "title"), { textContent: p.d + ": " + fmt(p.v) + " m²" })); });
       if (a) { var sx = px(doyFromJun1(a.date)); el("line", { x1: sx, x2: sx, y1: y1 - 4, y2: y0, stroke: "currentColor", "stroke-dasharray": "2 2", opacity: 0.7 }, svg); el("circle", { cx: sx, cy: py(a.best_m2), r: 4, fill: "none", stroke: "currentColor", "stroke-width": 1.5 }, svg); }
       var cap = document.createElement("figcaption");
       cap.innerHTML = "<b>" + y + "</b> " + (ok ? "" : '<span class="verdict">' + esc(q.verdict) + "</span>") + '<span class="muted"> · ' + pts.length + " clear views</span>";
       fig.appendChild(cap);
     }
     var note = document.createElement("p"); note.className = "small";
-    note.innerHTML = tag("Calculated") + "Visible fleece area (best estimate) in each Sentinel-2 scene with a clear view of the run, 1 June to 17 October, same scale for all years (0–" + fmt(max) + " m²). A dot is a clear view; the line breaks where there was none for more than 16 days. The ring marks the scene used for the yearly figure. Grey years failed the visual check (snow) and are not validated. Early-summer values may count old snow as fleece." + src("s8");
+    note.innerHTML = tag("Calculated") + "Visible fleece area (best estimate) in each Sentinel-2 scene with a clear view of the run, 1 June to 17 October, same scale for all years (0–" + fmt(max) + " m²). A dot is a clear view, joined by a thin line; the thick line is the median of each view and its neighbours (three views), which removes single-scene drops from passing summer snow, low cloud or shadow. Lines break where there was no clear view for more than 16 days. The ring marks the scene used for the yearly figure. Grey years failed the visual check (snow) and are not validated. Early-summer values may count old snow as fleece." + src("s8");
     box.appendChild(note);
   };
 
@@ -222,7 +225,7 @@
     var cursor = el("line", { y1: Y1, y2: Y0, stroke: "currentColor", "stroke-width": 1, "stroke-dasharray": "2 2" }, s2);
 
     var ctl = document.createElement("div"); ctl.className = "controls";
-    ctl.innerHTML = '<label style="display:flex;gap:8px;align-items:center;flex:1 1 300px">Year <input type="range" min="2008" max="2035" step="1" value="2026" style="flex:1;accent-color:currentColor"> <output></output></label>';
+    ctl.innerHTML = '<label style="display:flex;gap:8px;align-items:center;flex:1 1 300px">Year <input type="range" min="2008" max="2035" step="1" value="2008" style="flex:1;accent-color:currentColor"> <output></output></label>';
     wrap.appendChild(ctl);
     var s3 = el("svg", { viewBox: "0 0 680 200", role: "img", "aria-label": "Cross-section of the ski run: plinth height in the chosen year" }, wrap);
     var read = document.createElement("p"); wrap.appendChild(read);
@@ -230,20 +233,23 @@
     function sect(y) {
       var r = byY[y]; out.textContent = y; cursor.setAttribute("x1", qx(y)); cursor.setAttribute("x2", qx(y));
       while (s3.firstChild) s3.removeChild(s3.firstChild);
-      var g0 = 170, sc = 140 / MAXC, cx = 340, half = 90, slope = 30;
+      var g0 = 170, sc = 130 / Math.max(r.cHi, 4), cx = 300, half = 90, slope = 30;
       el("path", { d: "M20 " + g0 + " L660 " + g0, stroke: "currentColor", "stroke-width": 1.5 }, s3);
       text(s3, 24, g0 + 16, "uncovered ice next to the run (reference level)", { "font-size": 10, opacity: 0.7 });
       function trap(h, attrs) { var t = g0 - h * sc; return el("path", Object.assign({ d: "M" + (cx - half - slope) + " " + g0 + " L" + (cx - half) + " " + t + " L" + (cx + half) + " " + t + " L" + (cx + half + slope) + " " + g0 }, attrs), s3); }
       trap(r.cHi, { fill: "none", stroke: "currentColor", "stroke-dasharray": "3 3", opacity: 0.6 });
-      trap(r.cMid, { fill: "currentColor", "fill-opacity": r.proj ? 0.15 : 0.3, stroke: "currentColor", "stroke-width": 1.5, "stroke-dasharray": r.proj ? "5 4" : "" });
+      trap(r.cMid, { fill: "none", stroke: "currentColor", "stroke-width": 1.5, "stroke-dasharray": "6 4" });
+      text(s3, cx, g0 - r.cHi * sc - 8, "calculated upper limit, not a measurement", { "font-size": 10, "text-anchor": "middle", opacity: 0.8 });
+      if (stepObs) { var sx0 = 520, so = stepObs.value; el("rect", { x: sx0, y: g0 - so[1] * sc, width: 26, height: (so[1] - so[0]) * sc, fill: "currentColor" }, s3); el("rect", { x: sx0, y: g0 - so[0] * sc, width: 26, height: so[0] * sc, fill: "currentColor", "fill-opacity": 0.5 }, s3); text(s3, sx0 + 13, g0 - so[1] * sc - 6, "one summer, measured 2010", { "font-size": 10, "text-anchor": "middle" }); text(s3, sx0 + 13, g0 - so[1] * sc - 18, so.join("–") + " m", { "font-size": 11, "font-weight": 700, "text-anchor": "middle" }); }
       trap(r.cLo, { fill: "none", stroke: "currentColor", "stroke-dasharray": "3 3", opacity: 0.6 });
-      text(s3, cx + half + 8, g0 - r.cMid * sc - 4, r.cMid.toFixed(0) + " m", { "font-size": 12, "font-weight": 700 });
+      text(s3, cx - half - slope - 8, g0 - r.cMid * sc + 4, r.cMid.toFixed(r.cMid < 10 ? 1 : 0) + " m", { "font-size": 12, "font-weight": 700, "text-anchor": "end" });
+      text(s3, 660, 16, "vertical scale changes with the year", { "font-size": 9, "text-anchor": "end", opacity: 0.6 });
       // a person, 1.8 m, for scale
-      var ph = 1.8 * sc, pxp = 600; el("line", { x1: pxp, x2: pxp, y1: g0, y2: g0 - ph, stroke: "currentColor", "stroke-width": 2 }, s3); text(s3, pxp + 4, g0 - 2, "1.8 m", { "font-size": 9, opacity: 0.7 });
+      var ph = 1.8 * sc, pxp = 610; el("line", { x1: pxp, x2: pxp, y1: g0, y2: g0 - ph, stroke: "currentColor", "stroke-width": 2 }, s3); text(s3, pxp + 4, g0 - 2, "1.8 m", { "font-size": 9, opacity: 0.7 });
       read.innerHTML = (r.proj ? tag("Synthetic") : tag("Calculated")) + "<b>" + y + "</b>: if every summer since 2008 had kept its ice in place, and nothing else changed, the covered run would stand about <b>" + r.cMid.toFixed(0) + " m</b> above the ice beside it (" + r.cLo.toFixed(0) + "–" + r.cHi.toFixed(0) + " m)." + (r.proj ? " Projection: the summer of " + r.from + " repeated." : "");
     }
     slider.addEventListener("input", function () { sect(+slider.value); });
-    sect(2026);
+    sect(2008);
     var r13 = byY[2013], r10 = byY[2010];
     var note = document.createElement("p");
     note.innerHTML = "<b>What the arithmetic says.</b> For one summer it lands on the field: about " + r10.mid.toFixed(1) + " m for 2010 against the " + (stepObs ? stepObs.value.join("–") : "1.5–2") + " m step observed. After six seasons (2013) it gives " + r13.cLo.toFixed(0) + "–" + r13.cHi.toFixed(0) + " m, a range that holds the operator's 11 m (C09: \u201cuncovered ice dropped 11 m\u201d, read here as a step)" + src("s1") + ". By 2026 it reaches " + byY[2026].cLo.toFixed(0) + "–" + byY[2026].cHi.toFixed(0) + " m. A plinth that tall would be hard to miss; ice flow, snow laid and pushed every winter, grooming and covers that move between years all wear it down, and none of them is in the model. The LiDAR flights (2006–09, 2014, 2018) can measure the real step: that test is next.";
@@ -316,6 +322,14 @@
         }).join("") + "</tbody></table>";
     }
     draw();
+  };
+
+  V.tension = function (box, D) {
+    var ul = document.createElement("ul"); ul.className = "tension";
+    D.claims.claims.filter(function (c) { return c.status === "tension"; }).forEach(function (c) {
+      var li = document.createElement("li"); li.innerHTML = "<b>" + c.id + " · " + esc(c.who) + ".</b> " + esc(c.text) + src(c.source) + '<br><span class="small muted">' + esc(c.test) + "</span>"; ul.appendChild(li);
+    });
+    box.appendChild(ul);
   };
 
   // ---------- 6. Evidence stack (explore) ----------
