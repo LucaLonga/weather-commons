@@ -27,6 +27,11 @@
 <p class="muted small">22 · Luca · started 2026-11-02 · updated 2026-11-23</p>
 <p class="note small">Every element carries its kind: <span class="tag">Documented</span> in a study or record, <span class="tag soft">Claimed (operator)</span> by the operator, <span class="tag soft">Reported</span> by others, <span class="tag">Observed</span> in an image, <span class="tag calc">Calculated</span> by this sketch, <span class="tag dot">Not known</span>. The explorable stack of summers is on <a href="explore.html">explore.html</a>.</p>
 
+<h2 id="where">Where, who, why</h2>
+<figure class="full"><img src="img/map_alps.svg" alt="Map of the Alps with the Presena glacier above Passo del Tonale, and Trento, Milan, Bolzano, Venice and Linz" width="760" height="481" style="width:100%;height:auto"></figure>
+<p class="small"><span class="tag">Cartographic</span>Natural Earth (public domain): borders, lakes and the generalised extent of the Alps. Places are those linked to the covers: the Province in Trento, the University in Milan, the incinerator in Bolzano, the Biennale in Venice, the fabric maker in Linz.</p>
+<p>The Presena glacier lies between about 2,700 and 3,000 m above Passo del Tonale, in the municipality of Vermiglio (Trentino), on the border with Lombardy. Lifts reached it in 1963 and summer skiing began in 1966–67; in 1987 the municipality bought the lifts. As the glacier shrank, from 82 ha in 1961 to 26 ha in 2011, the summer season ended earlier and rock began to break through the ski run. In 2008 the Province approved an experimental programme with the lift company and two universities: every summer since, white geotextile has been laid on the run to slow its melt (in 2010, from 28 June to 14 September).<sup><a href="#s2">2</a></sup><sup>,</sup><sup><a href="#s9">9</a></sup> The operator says the covered area grew to 110,000 m² and that the work costs up to €350,000 a year, partly paid by the Province.<sup><a href="#s1">1</a></sup> This sketch asks what nearly twenty summers of covers have left on the ice, how far the figures hold, and who maintains a public glacier.</p>
+
 <h2 id="breaths">Eleven breaths</h2>
 <p>Seen from Sentinel-2, the covered run fills in every June and July and empties every September: the fleece appears as the snow melts off it, and disappears when the sheets are taken up. One curve per summer, 2016–2026.</p>
 <div id="v-breaths" class="full"></div>
@@ -53,6 +58,10 @@
 <h3>How much does a cover save?</h3>
 <p>One summer of melt on three surfaces, with the albedos measured on Presena: the bare glacier, new fleece and reused fleece.</p>
 <div id="v-model" class="full"></div>
+
+<h3>The plinth: what twenty summers could have kept</h3>
+<p>Ice under a cover melts less than the ice beside it, so the covered run should rise above its surroundings, summer after summer, like a plinth. How tall could it be by now? Move the year.</p>
+<div id="v-plinth" class="full"></div>
 
 <!-- 3. Situate -->
 <h2 id="situate">Situate</h2>
@@ -86,7 +95,7 @@
   <li id="s10">Betti G., Fleck K., “La montagna invisibile / The invisible mountain”, 2021, written with materials from the operator. <a href="https://www.theinvisiblemountain.com">theinvisiblemountain.com</a>. Photos not reproduced.</li>
 </ol>
 <ul class="small">
-  <li>Data: <a href="data/years.json">years.json</a>, <a href="data/area_s2.json">area_s2.json</a>, <a href="data/observations_s2.json">observations_s2.json</a>, <a href="data/qa.csv">qa.csv</a> (visual check), <a href="data/claims.json">claims.json</a>, <a href="data/actors.json">actors.json</a>, <a href="data/parameters.json">parameters.json</a>; catalogue <a href="data/DATA_CATALOG.md">DATA_CATALOG.md</a>. Raw Earth Engine exports are archived with SHA-256 checksums.</li>
+  <li>Data: <a href="data/years.json">years.json</a>, <a href="data/area_s2.json">area_s2.json</a>, <a href="data/observations_s2.json">observations_s2.json</a>, <a href="data/qa.csv">qa.csv</a> (visual check), <a href="data/claims.json">claims.json</a>, <a href="data/actors.json">actors.json</a>, <a href="data/parameters.json">parameters.json</a>, <a href="data/weather_summers.json">weather_summers.json</a> (ERA5 via Open-Meteo, CC BY 4.0, 28 June–14 September 2008–2026, fetched 2026-11-23); catalogue <a href="data/DATA_CATALOG.md">DATA_CATALOG.md</a>. Raw Earth Engine exports are archived with SHA-256 checksums.</li>
   <li><b>Method of the satellite count.</b> One late-summer scene per year (19 July–28 August, chosen by cloud on a ring, shadow and fresh snow on the run). Fleece fraction by linear unmixing of five surfaces. Lowest = pixels at least 75% fleece; highest = every pixel at least 15% fleece; best = sum of fractions; all inside a zone where fleece appears in at least 30% of fairly clear scenes 2016–2026 (130,587 m²). Fleece outside the zone is reported as an error measure; part of it is real fleece just past the zone edge.</li>
   <li><b>Visual check.</b> Each yearly scene was checked by eye (qa.csv). 2018 (fresh snow), 2020, 2021 and 2024 (residual snow) did not pass and are drawn in grey.</li>
   <li><b>What this sketch cannot establish:</b> the true covered area in any year (visible area is not fabric area: sheets can lie under snow, in shadow or outside the zone), the money, the permits, the ownership, or any effect downstream.</li>
@@ -102,6 +111,7 @@ V22.load().then(function (D) {
   V22.breaths(document.getElementById("v-breaths"), D);
   V22.areaChart(document.getElementById("v-area"), D);
   V22.model(document.getElementById("v-model"), D);
+  V22.plinth(document.getElementById("v-plinth"), D);
   V22.actors(document.getElementById("v-actors"), D);
   document.getElementById("v-counts").textContent = V22.counts(D);
   V22.ledger(document.getElementById("v-ledger"), D);
