@@ -41,6 +41,8 @@ python -m http.server 8090
 | `views.js`, `views.css` | the shared views of both pages: eleven breaths, area chart, melt model, actors, claims ledger, evidence stack |
 | `data/area_s2.json`, `data/observations_s2.json`, `data/outlines_s2.geojson`, `data/skirun_zone.geojson`, `data/qa.csv` | Sentinel-2 results v3.6 (calculated, preliminary) and the visual check |
 | `data/actors.json` | who maintains the glacier: actors and links, each with kind and source |
+| `data/weather_summers.json`, `tools/fetch_open_meteo_summers.py` | ERA5 weather, 28 June–14 September, every summer 2008–2026 (for the plinth) |
+| `img/map_alps.svg` | locator map, made from Natural Earth |
 | `img/years/` | one Sentinel-2 image per summer 2016–2026: natural colour, SWIR, fleece fraction |
 | `data/weather_summer_2021.json` | optional: reanalysed weather from `tools/fetch_open_meteo.py` |
 | `data/parameters.json` | model parameters, each with source and status |
@@ -53,12 +55,15 @@ python -m http.server 8090
 
 | Data | Maker, date | Licence | Changes | Kind |
 | --- | --- | --- | --- | --- |
-| Weather in the Simulate chart | ERA5 via Open-Meteo, adjusted to 2,765 m, if present; otherwise generated in the page (seed 22) | CC BY 4.0 (Open-Meteo) | daily means, MJ/m² converted to W/m² | reanalysed or synthetic |
+| Weather in the Simulate chart | ERA5 via Open-Meteo, adjusted to 2,765 m, 25 June–5 September 2021 | CC BY 4.0 (Open-Meteo) | daily means, MJ/m² converted to W/m² | reanalysed |
 | Satellite count v3.6 | own calculation, Sentinel-2 L1C via Earth Engine, run 2026-11-23 (snapshot f8e14116f7fcb7becc513334a3ccfc29) | CC BY 4.0 | unmixing; lowest/best/highest; visual check in qa.csv; not validated | calculated |
 | Cover areas 2008–2011, glacier areas 1961–2011, governance | AINEVA, Neve e Valanghe 74 (full text) | AINEVA | none | documented |
 | Material weights, Bolzano, Biennale | Betti and Fleck 2021, with materials from the operator | authors | none | reported |
 | Actors and links | data/actors.json, from the sources above, 2026-11-23 | CC BY 4.0 | links without a source marked not known | documented / reported / not known |
 | Albedo values | AINEVA Neve e Valanghe 74 (2010: glacier 0.43, new fleece 0.64); PhD thesis UniMi 2013 (reused fleece 0.43); snow still a placeholder | publisher | none | documented (snow: synthetic) |
+| Weather 2008–2026 for the plinth | ERA5 via Open-Meteo, adjusted to 2,765 m, fetched 2026-11-23 | CC BY 4.0 (Open-Meteo) | daily means, 28 June–14 September, MJ/m² converted to W/m² | reanalysed |
+| Plinth height | own calculation from the melt model and documented efficacies (29–30% model, 52% AINEVA 2010, 69% 2012 tests); 2027–2035 repeat 2016–2024 | CC BY 4.0 | none; an upper limit, not a measurement | calculated / synthetic |
+| Locator map | Natural Earth 50 m countries and lakes, 10 m geography regions (Alps) | public domain | clipped, simplified | cartographic |
 | Melt rule and factors | Pellicciotti et al. 2005 | journal | values to verify | modelled (rule) |
 | 2010 cover area and ablation | AINEVA, Neve e Valanghe 74 | AINEVA | none | observed (field) |
 | Covered area 2014–2021, sheet size, snow laid each winter | Consorzio Pontedilegno–Tonale, read 2026-11-04 | all rights reserved | none | operator's claim |
