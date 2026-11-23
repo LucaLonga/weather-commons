@@ -43,7 +43,7 @@
   <figure id="v-stack"></figure>
   <aside class="inspector" id="v-panel" aria-live="polite"><h3>Start here</h3><p>Click a plate.</p></aside>
 </div>
-<p class="small"><span class="tag calc">Calculated</span>Outlines from Sentinel-2, one late-summer scene per year (v3.6, preliminary, not validated against independent images). 2008–2011 have areas but no outlines: the area is shown on the scale beside the plate, never as an invented shape.<sup><a href="index.html#s2">2</a></sup><sup><a href="index.html#s8">8</a></sup></p>
+<p class="small"><span class="tag calc">Calculated</span>Outlines from Sentinel-2, one late-summer scene per year (v3.6, preliminary, not validated against independent images). 2008–2011 have areas but no outlines: the area is shown on the scale beside the plate, never as an invented shape.<sup><a href="index.html#s2">2</a>,<a href="index.html#s8">8</a></sup></p>
 
 <h2 id="breaths">Eleven breaths</h2>
 <div id="v-breaths" class="full"></div>
@@ -57,6 +57,9 @@
 
 <h2 id="model">How much does a cover save?</h2>
 <div id="v-model" class="full"></div>
+
+<h2 id="plinth">The plinth</h2>
+<div id="v-plinth" class="full"></div>
 
 <h2 id="sources">Sources and limits</h2>
 <p class="small">Numbered sources, method and limits are on the <a href="index.html#sources">overview</a>. Everything on this page is read from <code>data/</code> and <code>img/years/</code>; nothing is typed in by hand.</p>
@@ -75,6 +78,7 @@ V22.load().then(function (D) {
   document.getElementById("v-counts").textContent = V22.counts(D);
   V22.ledger(document.getElementById("v-ledger"), D);
   V22.model(document.getElementById("v-model"), D);
+  V22.plinth(document.getElementById("v-plinth"), D);
 }).catch(function (e) { document.querySelector("main").insertAdjacentHTML("beforeend", "<p><b>Data could not be loaded:</b> " + e.message + ". Open the page through a web server.</p>"); });
 </script>
 </body>

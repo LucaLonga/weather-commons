@@ -42,11 +42,12 @@
     return Promise.all([
       getJSON("data/years.json"), getJSON("data/claims.json"), getJSON("data/area_s2.json"), getJSON("data/observations_s2.json"),
       getText("data/qa.csv"), getJSON("data/parameters.json"), opt("data/weather_summer_2021.json", getJSON), getJSON("data/actors.json"),
-      getJSON("data/assertions.json"), opt("data/outlines_s2.geojson", getJSON), opt("data/skirun_zone.geojson", getJSON), opt("img/years/index.json", getJSON)
+      getJSON("data/assertions.json"), opt("data/outlines_s2.geojson", getJSON), opt("data/skirun_zone.geojson", getJSON), opt("img/years/index.json", getJSON),
+      opt("data/weather_summers.json", getJSON)
     ]).then(function (r) {
       D.years = r[0]; D.claims = r[1]; D.area = r[2]; D.obs = r[3].observations; D.qa = {};
       parseCSV(r[4]).forEach(function (q) { D.qa[+q.year] = q; });
-      D.params = r[5]; D.weather = r[6]; D.actors = r[7]; D.assert = r[8]; D.outlines = r[9]; D.zone = r[10]; D.img = r[11] || {};
+      D.params = r[5]; D.weather = r[6]; D.weatherSummers = r[12]; D.actors = r[7]; D.assert = r[8]; D.outlines = r[9]; D.zone = r[10]; D.img = r[11] || {};
       D.byYear = {}; D.years.years.forEach(function (y) { D.byYear[y.year] = y; });
       D.areaByYear = {}; D.area.years.forEach(function (a) { D.areaByYear[a.year] = a; });
       D.qaOk = function (y) { var q = D.qa[y]; return !q || q.verdict === "ok"; };
@@ -161,6 +162,94 @@
     box.appendChild(f);
   };
 
+
+  // ---------- 3b. The plinth: what the covers could have kept in place ----------
+  V.plinth = function (box, D) {
+    var WS = D.weatherSummers, v = D.params.values;
+    if (!WS) { box.innerHTML = '<p class="small">' + tag("Not known") + "Weather for 2008–2026 missing (data/weather_summers.json): plinth not calculated.</p>"; return; }
+    var P = { tf: v.tf.value, srf: v.srf.value, tt: v.tt.value }, dens = ((D.params.ice_density_kg_m3 || {}).value || 900) / 1000;
+    function melt(days, al) { var m = 0; days.forEach(function (w) { if (w.t_mean_c > P.tt) m += Math.max(0, 24 * (P.tf * w.t_mean_c + P.srf * (1 - al) * w.sw_mean_wm2)); }); return m / 1000; }
+    var c = D.params.checks || {}, meas = c.melt_2010_covered_vs_unmodified_cm_we, stepObs = c.step_end_of_summer_2010_m;
+    var E_MID = meas ? 1 - meas.value[0] / meas.value[1] : 0.52, E_HIGH = 0.69;
+    var rows = [];
+    for (var y = 2008; y <= 2026; y++) {
+      var yr = WS.years[String(y)]; if (!yr) continue;
+      var bare = melt(yr.days, v.albedo_ice.value), eLow = 1 - melt(yr.days, v.albedo_fleece.value) / bare;
+      rows.push({ y: y, bare: bare, lo: bare * eLow / dens, mid: bare * E_MID / dens, hi: bare * E_HIGH / dens, proj: false });
+    }
+    var hist = rows.slice(), base = rows.filter(function (r) { return r.y >= 2016; });
+    for (var i = 0; i < 9; i++) { var b = base[i % base.length]; rows.push({ y: 2027 + i, bare: b.bare, lo: b.lo, mid: b.mid, hi: b.hi, proj: true, from: b.y }); }
+    var cum = { lo: 0, mid: 0, hi: 0 }; rows.forEach(function (r) { cum.lo += r.lo; cum.mid += r.mid; cum.hi += r.hi; r.cLo = cum.lo; r.cMid = cum.mid; r.cHi = cum.hi; });
+    var byY = {}; rows.forEach(function (r) { byY[r.y] = r; });
+
+    // A · per summer
+    var W = 680, H = 190, x0 = 46, x1 = 664, y0 = 160, y1 = 14, MAXS = 3;
+    var svg = el("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": "Height kept by the cover each summer, 2008 to 2026" }, box);
+    var px = function (y) { return x0 + (x1 - x0) * (y - 2008 + 0.5) / 19; }, py = function (m) { return y0 - (y0 - y1) * m / MAXS; };
+    for (var m = 0; m <= MAXS; m++) { el("line", { x1: x0, x2: x1, y1: py(m), y2: py(m), stroke: "currentColor", opacity: m ? 0.12 : 0.5 }, svg); text(svg, x0 - 6, py(m) + 4, m + " m", { "text-anchor": "end", "font-size": 10, opacity: 0.7 }); }
+    hist.forEach(function (r) {
+      el("line", { x1: px(r.y), x2: px(r.y), y1: py(r.lo), y2: py(r.hi), stroke: "currentColor", "stroke-width": 7, opacity: 0.3 }, svg);
+      el("line", { x1: px(r.y) - 6, x2: px(r.y) + 6, y1: py(r.mid), y2: py(r.mid), stroke: "currentColor", "stroke-width": 2 }, svg);
+      text(svg, px(r.y), y0 + 14, String(r.y).slice(2), { "text-anchor": "middle", "font-size": 10, opacity: 0.8 });
+    });
+    if (stepObs) { var a = stepObs.value; el("rect", { x: px(2010) + 7, y: py(a[1]), width: 5, height: py(a[0]) - py(a[1]), fill: "currentColor" }, svg); text(svg, px(2010) + 15, py(a[1]) - 2, "step seen after summer 2010", { "font-size": 10 }); }
+    var cap1 = document.createElement("p"); cap1.className = "small";
+    cap1.innerHTML = tag("Calculated") + "Ice kept in place by the cover each summer (m of ice): melt of the bare glacier from the model, with the ERA5 weather of that summer (28 June to 14 September) " + tag("Reanalysed") + ", times the cover's efficacy. Low = albedo only (the model, about 28–30%); tick = 52% measured in 2010" + src("s2") + "; high = 69% from the 2012 tests" + src("s3") + ". Black bar: step of " + (stepObs ? stepObs.value.join("–") : "1.5–2") + " m observed at the end of summer 2010 " + tag("Documented") + src("s2") + ".";
+    box.appendChild(cap1);
+
+    // B · accumulated, with a year slider and a cross-section
+    var wrap = document.createElement("div"); wrap.className = "plinth"; box.appendChild(wrap);
+    var W2 = 680, H2 = 230, X0 = 46, X1 = 664, Y0 = 200, Y1 = 14, MAXC = 70;
+    var s2 = el("svg", { viewBox: "0 0 " + W2 + " " + H2, role: "img", "aria-label": "Accumulated plinth height 2008 to 2035" }, wrap);
+    var qx = function (y) { return X0 + (X1 - X0) * (y - 2008) / (2035 - 2008); }, qy = function (m) { return Y0 - (Y0 - Y1) * Math.min(m, MAXC) / MAXC; };
+    for (var mm = 0; mm <= MAXC; mm += 10) { el("line", { x1: X0, x2: X1, y1: qy(mm), y2: qy(mm), stroke: "currentColor", opacity: mm ? 0.12 : 0.5 }, s2); text(s2, X0 - 6, qy(mm) + 4, mm + " m", { "text-anchor": "end", "font-size": 10, opacity: 0.7 }); }
+    [2008, 2013, 2018, 2023, 2026, 2030, 2035].forEach(function (y) { text(s2, qx(y), Y0 + 14, y, { "text-anchor": "middle", "font-size": 10, opacity: 0.8 }); });
+    el("rect", { x: qx(2026), y: Y1, width: qx(2035) - qx(2026), height: Y0 - Y1, fill: "currentColor", opacity: 0.05 }, s2);
+    text(s2, qx(2026) + 6, Y1 + 12, "projection: 2016–2024 summers repeated", { "font-size": 10, opacity: 0.7 });
+    function band(list, dash) {
+      var top = list.map(function (r, i) { return (i ? "L" : "M") + qx(r.y).toFixed(1) + " " + qy(r.cHi).toFixed(1); }).join(" ");
+      var bot = list.slice().reverse().map(function (r) { return "L" + qx(r.y).toFixed(1) + " " + qy(r.cLo).toFixed(1); }).join(" ");
+      el("path", { d: top + " " + bot + "Z", fill: "currentColor", opacity: dash ? 0.1 : 0.2 }, s2);
+      el("path", { d: list.map(function (r, i) { return (i ? "L" : "M") + qx(r.y).toFixed(1) + " " + qy(r.cMid).toFixed(1); }).join(" "), fill: "none", stroke: "currentColor", "stroke-width": 2, "stroke-dasharray": dash ? "5 4" : "" }, s2);
+    }
+    band(rows.filter(function (r) { return r.y <= 2026; }), false);
+    band(rows.filter(function (r) { return r.y >= 2026; }), true);
+    var claim = D.claimById.C09;
+    if (claim) { el("circle", { cx: qx(2013), cy: qy(11), r: 5, fill: "var(--bg)", stroke: "currentColor", "stroke-width": 1.5 }, s2); text(s2, qx(2013) + 8, qy(11) - 6, "11 m after six seasons (C09)", { "font-size": 10 }); }
+    var cursor = el("line", { y1: Y1, y2: Y0, stroke: "currentColor", "stroke-width": 1, "stroke-dasharray": "2 2" }, s2);
+
+    var ctl = document.createElement("div"); ctl.className = "controls";
+    ctl.innerHTML = '<label style="display:flex;gap:8px;align-items:center;flex:1 1 300px">Year <input type="range" min="2008" max="2035" step="1" value="2026" style="flex:1;accent-color:currentColor"> <output></output></label>';
+    wrap.appendChild(ctl);
+    var s3 = el("svg", { viewBox: "0 0 680 200", role: "img", "aria-label": "Cross-section of the ski run: plinth height in the chosen year" }, wrap);
+    var read = document.createElement("p"); wrap.appendChild(read);
+    var slider = ctl.querySelector("input"), out = ctl.querySelector("output");
+    function sect(y) {
+      var r = byY[y]; out.textContent = y; cursor.setAttribute("x1", qx(y)); cursor.setAttribute("x2", qx(y));
+      while (s3.firstChild) s3.removeChild(s3.firstChild);
+      var g0 = 170, sc = 140 / MAXC, cx = 340, half = 90, slope = 30;
+      el("path", { d: "M20 " + g0 + " L660 " + g0, stroke: "currentColor", "stroke-width": 1.5 }, s3);
+      text(s3, 24, g0 + 16, "uncovered ice next to the run (reference level)", { "font-size": 10, opacity: 0.7 });
+      function trap(h, attrs) { var t = g0 - h * sc; return el("path", Object.assign({ d: "M" + (cx - half - slope) + " " + g0 + " L" + (cx - half) + " " + t + " L" + (cx + half) + " " + t + " L" + (cx + half + slope) + " " + g0 }, attrs), s3); }
+      trap(r.cHi, { fill: "none", stroke: "currentColor", "stroke-dasharray": "3 3", opacity: 0.6 });
+      trap(r.cMid, { fill: "currentColor", "fill-opacity": r.proj ? 0.15 : 0.3, stroke: "currentColor", "stroke-width": 1.5, "stroke-dasharray": r.proj ? "5 4" : "" });
+      trap(r.cLo, { fill: "none", stroke: "currentColor", "stroke-dasharray": "3 3", opacity: 0.6 });
+      text(s3, cx + half + 8, g0 - r.cMid * sc - 4, r.cMid.toFixed(0) + " m", { "font-size": 12, "font-weight": 700 });
+      // a person, 1.8 m, for scale
+      var ph = 1.8 * sc, pxp = 600; el("line", { x1: pxp, x2: pxp, y1: g0, y2: g0 - ph, stroke: "currentColor", "stroke-width": 2 }, s3); text(s3, pxp + 4, g0 - 2, "1.8 m", { "font-size": 9, opacity: 0.7 });
+      read.innerHTML = (r.proj ? tag("Synthetic") : tag("Calculated")) + "<b>" + y + "</b>: if every summer since 2008 had kept its ice in place, and nothing else changed, the covered run would stand about <b>" + r.cMid.toFixed(0) + " m</b> above the ice beside it (" + r.cLo.toFixed(0) + "–" + r.cHi.toFixed(0) + " m)." + (r.proj ? " Projection: the summer of " + r.from + " repeated." : "");
+    }
+    slider.addEventListener("input", function () { sect(+slider.value); });
+    sect(2026);
+    var r13 = byY[2013], r10 = byY[2010];
+    var note = document.createElement("p");
+    note.innerHTML = "<b>What the arithmetic says.</b> For one summer it lands on the field: about " + r10.mid.toFixed(1) + " m for 2010 against the " + (stepObs ? stepObs.value.join("–") : "1.5–2") + " m step observed. After six seasons (2013) it gives " + r13.cLo.toFixed(0) + "–" + r13.cHi.toFixed(0) + " m, a range that holds the operator's 11 m (C09: \u201cuncovered ice dropped 11 m\u201d, read here as a step)" + src("s1") + ". By 2026 it reaches " + byY[2026].cLo.toFixed(0) + "–" + byY[2026].cHi.toFixed(0) + " m. A plinth that tall would be hard to miss; ice flow, snow laid and pushed every winter, grooming and covers that move between years all wear it down, and none of them is in the model. The LiDAR flights (2006–09, 2014, 2018) can measure the real step: that test is next.";
+    box.appendChild(note);
+    var lim = document.createElement("p"); lim.className = "small";
+    lim.innerHTML = tag("Calculated") + "Same melt model as above (not tuned); m w.e. converted to m of ice at " + (dens * 1000) + " kg/m³. Assumes the same patch covered every summer, 28 June to 14 September. Not a measurement: an upper limit of what the covers could have kept, if nothing else moved the ice. " + tag("Synthetic") + "2027–2035 repeat the 2016–2024 summers; no warming trend is added.";
+    box.appendChild(lim);
+  };
+
   // ---------- 4. Actors ----------
   var POS = { glacier: [400, 215], province: [170, 60], lifts: [420, 60], comune: [670, 60], consorzio: [665, 150], unimi: [75, 165], unitn: [235, 245], linz: [130, 370], bolzano: [440, 370], biennale: [680, 320] };
   V.actors = function (box, D) {
@@ -233,7 +322,7 @@
     zone.forEach(function (rs) { rs.forEach(function (r) { r.forEach(function (p) { E0 = Math.min(E0, p[0]); E1 = Math.max(E1, p[0]); N0 = Math.min(N0, p[1]); N1 = Math.max(N1, p[1]); }); }); });
     if (E0 > E1) { E0 = -250; E1 = 250; N0 = -500; N1 = 500; }
     var m = 60; E0 -= m; E1 += m; N0 -= m; N1 += m;
-    var s = 0.42, KX = 0.6, KY = 0.24, LEFT = 58, plateW = (N1 - N0) * s, plateD = (E1 - E0) * s, GAP = plateD * KY + 14;
+    var s = 0.46, KX = 0.6, KY = 0.3, LEFT = 58, plateW = (N1 - N0) * s, plateD = (E1 - E0) * s, GAP = plateD * KY + 20;
     var SCALE_X = LEFT + plateW + plateD * KX + 20, SCALE_W = 150, MAXA = 120000;
     var years = []; for (var y = 2008; y <= 2026; y++) years.push(y);
     var top = 46, H = top + (years.length - 1) * GAP + plateD * KY + 40, W = SCALE_X + SCALE_W + 20;
