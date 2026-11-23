@@ -206,6 +206,7 @@
     [2008, 2013, 2018, 2023, 2026, 2030, 2035].forEach(function (y) { text(s2, qx(y), Y0 + 14, y, { "text-anchor": "middle", "font-size": 10, opacity: 0.8 }); });
     el("rect", { x: qx(2026), y: Y1, width: qx(2035) - qx(2026), height: Y0 - Y1, fill: "currentColor", opacity: 0.05 }, s2);
     text(s2, qx(2026) + 6, Y1 + 12, "projection: 2016–2024 summers repeated", { "font-size": 10, opacity: 0.7 });
+    text(s2, X0 + 8, Y1 + 12, "straight by construction: each summer is simply added", { "font-size": 10, opacity: 0.7 });
     function band(list, dash) {
       var top = list.map(function (r, i) { return (i ? "L" : "M") + qx(r.y).toFixed(1) + " " + qy(r.cHi).toFixed(1); }).join(" ");
       var bot = list.slice().reverse().map(function (r) { return "L" + qx(r.y).toFixed(1) + " " + qy(r.cLo).toFixed(1); }).join(" ");
@@ -244,6 +245,9 @@
     var r13 = byY[2013], r10 = byY[2010];
     var note = document.createElement("p");
     note.innerHTML = "<b>What the arithmetic says.</b> For one summer it lands on the field: about " + r10.mid.toFixed(1) + " m for 2010 against the " + (stepObs ? stepObs.value.join("–") : "1.5–2") + " m step observed. After six seasons (2013) it gives " + r13.cLo.toFixed(0) + "–" + r13.cHi.toFixed(0) + " m, a range that holds the operator's 11 m (C09: \u201cuncovered ice dropped 11 m\u201d, read here as a step)" + src("s1") + ". By 2026 it reaches " + byY[2026].cLo.toFixed(0) + "–" + byY[2026].cHi.toFixed(0) + " m. A plinth that tall would be hard to miss; ice flow, snow laid and pushed every winter, grooming and covers that move between years all wear it down, and none of them is in the model. The LiDAR flights (2006–09, 2014, 2018) can measure the real step: that test is next.";
+    var lin = document.createElement("p");
+    lin.innerHTML = "<b>Why the line is straight, and the real plinth is not.</b> The model adds one summer to the next, so it can only draw a straight line (steeper in warmer summers). A real plinth should bend: the taller it stands, the more its sides are exposed to sun and wind, and the faster the ice creeps outwards under its own weight, so its growth should slow towards a height where gains and losses balance. Where the ice beside the run melts down to rock, the step loses its reference altogether. How fast it bends is " + tag("Not known") + "here: no curve is drawn without a measurement to fit it to.";
+    box.appendChild(lin);
     box.appendChild(note);
     var lim = document.createElement("p"); lim.className = "small";
     lim.innerHTML = tag("Calculated") + "Same melt model as above (not tuned); m w.e. converted to m of ice at " + (dens * 1000) + " kg/m³. Assumes the same patch covered every summer, 28 June to 14 September. Not a measurement: an upper limit of what the covers could have kept, if nothing else moved the ice. " + tag("Synthetic") + "2027–2035 repeat the 2016–2024 summers; no warming trend is added.";
