@@ -6,7 +6,7 @@
 <title>22 · Do glaciers breathe? · Evidence stack · Realtime Weather</title>
 <meta name="description" content="Evidence stack: one plate per summer on the Presena glacier, 2008–2026, with what is documented, claimed, reported, observed, calculated and not known.">
 <link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="views.css">
+<link rel="stylesheet" href="views.css?v=2026-11-23c">
 </head>
 <body>
 <main>
@@ -70,7 +70,7 @@
 </footer>
 </main>
 <script>window.V22_SRC = "index.html";</script>
-<script src="views.js"></script>
+<script src="views.js?v=2026-11-23c"></script>
 <script>
 V22.load().then(function (D) {
   V22.stack(document.getElementById("v-stack"), document.getElementById("v-panel"), D);
@@ -80,7 +80,7 @@ V22.load().then(function (D) {
   V22.ledger(document.getElementById("v-ledger"), D);
   V22.model(document.getElementById("v-model"), D);
   V22.plinth(document.getElementById("v-plinth"), D);
-  V22.lidar(document.getElementById("v-lidar"), D);
+  if (V22.lidar) V22.lidar(document.getElementById("v-lidar"), D);
 }).catch(function (e) { document.querySelector("main").insertAdjacentHTML("beforeend", "<p><b>Data could not be loaded:</b> " + e.message + ". Open the page through a web server.</p>"); });
 </script>
 </body>

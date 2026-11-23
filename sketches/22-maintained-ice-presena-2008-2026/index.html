@@ -7,7 +7,7 @@
 <meta name="description" content="Maintained ice, Presena 2008–2026. Every summer since 2008 white fleece is laid on the Presena glacier. What is documented, claimed, reported, observed and calculated about the covers, and what is not known.">
 <!-- style.css is the shared Realtime Weather look, copied into this folder. views.css styles the shared views. -->
 <link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="views.css">
+<link rel="stylesheet" href="views.css?v=2026-11-23c">
 </head>
 <body>
 <main>
@@ -113,14 +113,14 @@
   <p>Do glaciers breathe? Maintained ice, Presena 2008–2026 · Luca · Realtime Weather working group, Weather Commons</p>
 </footer>
 </main>
-<script src="views.js"></script>
+<script src="views.js?v=2026-11-23c"></script>
 <script>
 V22.load().then(function (D) {
   V22.breaths(document.getElementById("v-breaths"), D);
   V22.areaChart(document.getElementById("v-area"), D);
   V22.model(document.getElementById("v-model"), D);
   V22.plinth(document.getElementById("v-plinth"), D);
-  V22.lidar(document.getElementById("v-lidar"), D);
+  if (V22.lidar) V22.lidar(document.getElementById("v-lidar"), D);
   V22.actors(document.getElementById("v-actors"), D);
   document.getElementById("v-counts").textContent = V22.counts(D);
   V22.tension(document.getElementById("v-tension"), D);
