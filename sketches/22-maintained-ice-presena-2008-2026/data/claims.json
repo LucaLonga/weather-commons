@@ -69,9 +69,9 @@
    "id": "C09",
    "text": "After six seasons the covers preserved 2.5 m of snow; uncovered ice dropped 11 m.",
    "who": "Operator",
-   "status": "pending",
-   "test": "AINEVA documents a step of about 1.5-2 m after the single summer 2010: 11 m in six seasons is plausible in order of magnitude. Still to measure with LiDAR 2006-09 vs 2014/2018.",
-   "source": "s1"
+   "status": "supported",
+   "test": "PAT LiDAR 2006-09 -> 2013-15 (data/lidar_profiles.json, preliminary): the ice beside the run dropped up to about 10-12.5 m while the run stayed within about -2 to +3 m; step roughly 5-12 m over about 5-8 covered summers. Same order as the claim. Exact flight dates requested. Context: AINEVA step 1.5-2 m after one summer (2010); model upper limit 5-13 m by 2013.",
+   "source": "s1, s11"
   },
   {
    "id": "C10",

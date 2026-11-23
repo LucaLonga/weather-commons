@@ -60,6 +60,7 @@
 
 <h2 id="plinth">The plinth</h2>
 <div id="v-plinth" class="full"></div>
+<div id="v-lidar" class="full"></div>
 
 <h2 id="sources">Sources and limits</h2>
 <p class="small">Numbered sources, method and limits are on the <a href="index.html#sources">overview</a>. Everything on this page is read from <code>data/</code> and <code>img/years/</code>; nothing is typed in by hand.</p>
@@ -79,6 +80,7 @@ V22.load().then(function (D) {
   V22.ledger(document.getElementById("v-ledger"), D);
   V22.model(document.getElementById("v-model"), D);
   V22.plinth(document.getElementById("v-plinth"), D);
+  V22.lidar(document.getElementById("v-lidar"), D);
 }).catch(function (e) { document.querySelector("main").insertAdjacentHTML("beforeend", "<p><b>Data could not be loaded:</b> " + e.message + ". Open the page through a web server.</p>"); });
 </script>
 </body>
