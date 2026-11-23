@@ -33,3 +33,4 @@ table.ledger{font-size:14px;max-width:none}.ledger td,.ledger th{vertical-align:
 .intro{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:12px 28px;align-items:start;max-width:none}
 .intro figure{margin:4px 0 0}.intro img{width:100%;height:auto;display:block}.intro p{margin-top:0}
 @media (max-width:820px){.intro{grid-template-columns:1fr}}
+.tension{list-style:none;padding:0;max-width:none}.tension li{border-left:3px solid var(--fg);padding:4px 0 6px 12px;margin:8px 0;max-width:46rem}
