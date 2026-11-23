@@ -29,7 +29,7 @@ Read this before working on the sketch. Newest first.
 
 ## Open questions
 
-- The plinth arithmetic gives 18–43 m by 2026 if nothing else moved the ice: far more than is likely there. Measure with LiDAR (2006–09, 2014, 2018) before saying more.
+- The plinth arithmetic gives 18–43 m by 2026 if nothing else moved the ice. LiDAR 2006-09 -> 2013-15 measured 5-12 m; a newer survey would show whether the step keeps growing or levels off.
 - Labels to check (2026-11-23): the 2021 Biennale event is "Reported" with the operator page as source (years.json); by the new rule operator statements are "Claimed (operator)". The Consorzio's role ("organises the covering") rests on Betti and Fleck, who wrote with the operator's materials: Reported. The fabric maker link to 2012 rests on AINEVA (Linz) and the thesis (TenCate): Documented.
 - The melt model gives 30% less melt under new fleece (2021 weather) against 52% measured in 2010: albedo alone does not explain the saving; insulation is missing from the model.
 
@@ -43,6 +43,7 @@ Read this before working on the sketch. Newest first.
 
 ## Done
 
+- 2026-11-23 (evening) · The plinth, measured: PAT LiDAR 2006-09 -> 2013-15 shows the run 5-12 m above the ice beside it (five profiles, data/lidar_profiles.json); marked on the plinth chart; C09 supported (preliminary); source s11; third result sentence updated. Flight dates narrowed to about 5-8 covered summers; exact dates requested.
 - 2026-11-23 (later) · Overview: "Where, who, why" with a map of the Alps (Natural Earth) and a plain summary; Simulate: "The plinth", ice kept in place per summer and accumulated 2008–2026 (ERA5 for every summer, tools/fetch_open_meteo_summers.py), with the 2010 step and claim C09 for comparison, a year slider, a cross-section and a 2027–2035 projection (summers repeated, synthetic). Explore: more vertical space in the stack; plinth view reused.
 - 2026-11-23 · Overview rebuilt as "Do glaciers breathe?": eleven breaths, area chart 2008–2026 by kind, satellite and cloud-mask finding, melt model with documented albedos (not tuned), actors diagram (new data/actors.json), result sentences, claims counts, sources 9 and 10. Explore rebuilt as the evidence stack (19 plates, outlines, area scale, observation ticks, per-year images) with the same views below. Shared code in views.js / views.css. GIF reduced under 1 MB. Data from package v11.
 

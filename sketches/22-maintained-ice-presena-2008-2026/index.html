@@ -64,6 +64,8 @@
 <h3>The plinth: what twenty summers could have kept</h3>
 <p>Ice under a cover melts less than the ice beside it, so the covered run should rise above its surroundings, summer after summer, like a plinth. The calculation below is an upper limit, to be tested against LiDAR; it opens on the first summer, 2008, which can be compared with the step measured after one summer in 2010. Move the year.</p>
 <div id="v-plinth" class="full"></div>
+<h3>The plinth, measured</h3>
+<div id="v-lidar" class="full"></div>
 
 <!-- 3. Situate -->
 <h2 id="situate">Situate</h2>
@@ -77,7 +79,7 @@
 <ol>
   <li>The cover is visible from orbit in every summer from 2016 to 2026, and the standard cloud mask mistakes it for cloud.</li>
   <li>Documented covers grew from 28,000 m² in 2008 to 76,400 m² in 2010; for 2016–2026 the satellite gives a range, and the operator's figures sit inside it in 2016 and above it in 2017 and 2019 (both checked by eye), and in 2020 and 2021 (snow years, not validated).</li>
-  <li>One summer under the cover left a step of about 1.5–2 m in 2010; about 34 t of plastic are laid each year and 17 t burned, according to Betti and Fleck (2021).</li>
+  <li>One summer under the cover left a step of about 1.5–2 m in 2010; between the LiDAR surveys of 2006–09 and 2013–15 the run came to stand about 5–12 m above the ice beside it; about 34 t of plastic are laid each year and 17 t burned, according to Betti and Fleck (2021).</li>
 </ol>
 <p>Statements by others, and how far they hold: <b id="v-counts">…</b>.</p>
 <p>Four statements are in tension with other sources:</p>
@@ -97,6 +99,7 @@
   <li id="s8">Sentinel-2 Level-1C, ESA / Copernicus, via Google Earth Engine (COPERNICUS/S2_HARMONIZED). Copernicus licence. Script <code>tools/gee_presena_v3_6.js</code>, snapshot <a href="https://code.earthengine.google.com/f8e14116f7fcb7becc513334a3ccfc29">code.earthengine.google.com</a>, run 23 November 2026. Derived values: calculated, preliminary, not validated against independent images.</li>
   <li id="s9">Mosconi B., “Some examples of modelling glacier mass balance and results from snow melt mitigation strategies in the Italian Alps”, PhD thesis, Università degli Studi di Milano, XXV cycle, 2013 (tutor C. Smiraglia), doi:10.13130/mosconi-boris_phd2013-02-05. <a href="https://air.unimi.it/handle/2434/216123">air.unimi.it</a>. Field measurements 2010 and 2012.</li>
   <li id="s10">Betti G., Fleck K., “La montagna invisibile / The invisible mountain”, 2021, written with materials from the operator. <a href="https://www.theinvisiblemountain.com">theinvisiblemountain.com</a>. Photos not reproduced.</li>
+  <li id="s11">Provincia autonoma di Trento, Servizio Geologico: LiDAR DTM 2006-2009 (2 m; tiles 000607, 000608, 000663, 000664) and LiDAR 2014 integrated with 2018 flights (0.5 m; 16 tiles around the run, the ones on the run flown 2013-2015), STEM portal <a href="https://siat.provincia.tn.it/stem/">siat.provincia.tn.it/stem</a>, downloaded 2026-11-23. Difference and profiles made with scripts in the author's investigation repository (version B); exact flight dates requested.</li>
 </ol>
 <ul class="small">
   <li>Data: <a href="data/years.json">years.json</a>, <a href="data/area_s2.json">area_s2.json</a>, <a href="data/observations_s2.json">observations_s2.json</a>, <a href="data/qa.csv">qa.csv</a> (visual check), <a href="data/claims.json">claims.json</a>, <a href="data/actors.json">actors.json</a>, <a href="data/parameters.json">parameters.json</a>, <a href="data/weather_summers.json">weather_summers.json</a> (ERA5 via Open-Meteo, CC BY 4.0, 28 June–14 September 2008–2026, fetched 2026-11-23); catalogue <a href="data/DATA_CATALOG.md">DATA_CATALOG.md</a>. Raw Earth Engine exports are archived with SHA-256 checksums.</li>
@@ -117,6 +120,7 @@ V22.load().then(function (D) {
   V22.areaChart(document.getElementById("v-area"), D);
   V22.model(document.getElementById("v-model"), D);
   V22.plinth(document.getElementById("v-plinth"), D);
+  V22.lidar(document.getElementById("v-lidar"), D);
   V22.actors(document.getElementById("v-actors"), D);
   document.getElementById("v-counts").textContent = V22.counts(D);
   V22.tension(document.getElementById("v-tension"), D);

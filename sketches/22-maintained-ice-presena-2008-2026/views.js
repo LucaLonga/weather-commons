@@ -43,11 +43,11 @@
       getJSON("data/years.json"), getJSON("data/claims.json"), getJSON("data/area_s2.json"), getJSON("data/observations_s2.json"),
       getText("data/qa.csv"), getJSON("data/parameters.json"), opt("data/weather_summer_2021.json", getJSON), getJSON("data/actors.json"),
       getJSON("data/assertions.json"), opt("data/outlines_s2.geojson", getJSON), opt("data/skirun_zone.geojson", getJSON), opt("img/years/index.json", getJSON),
-      opt("data/weather_summers.json", getJSON)
+      opt("data/weather_summers.json", getJSON), opt("data/lidar_profiles.json", getJSON)
     ]).then(function (r) {
       D.years = r[0]; D.claims = r[1]; D.area = r[2]; D.obs = r[3].observations; D.qa = {};
       parseCSV(r[4]).forEach(function (q) { D.qa[+q.year] = q; });
-      D.params = r[5]; D.weather = r[6]; D.weatherSummers = r[12]; D.actors = r[7]; D.assert = r[8]; D.outlines = r[9]; D.zone = r[10]; D.img = r[11] || {};
+      D.params = r[5]; D.weather = r[6]; D.weatherSummers = r[12]; D.lidar = r[13]; D.actors = r[7]; D.assert = r[8]; D.outlines = r[9]; D.zone = r[10]; D.img = r[11] || {};
       D.byYear = {}; D.years.years.forEach(function (y) { D.byYear[y.year] = y; });
       D.areaByYear = {}; D.area.years.forEach(function (a) { D.areaByYear[a.year] = a; });
       D.qaOk = function (y) { var q = D.qa[y]; return !q || q.verdict === "ok"; };
@@ -222,6 +222,11 @@
     band(rows.filter(function (r) { return r.y >= 2026; }), true);
     var claim = D.claimById.C09;
     if (claim) { el("circle", { cx: qx(2013), cy: qy(11), r: 5, fill: "var(--bg)", stroke: "currentColor", "stroke-width": 1.5 }, s2); text(s2, qx(2013) + 8, qy(11) - 6, "11 m after six seasons (C09)", { "font-size": 10 }); }
+    if (D.lidar) {
+      var L = D.lidar.summary.step_m, lx0 = qx(2013.4), lx1 = qx(2015);
+      el("rect", { x: lx0, y: qy(L[1]), width: lx1 - lx0, height: qy(L[0]) - qy(L[1]), fill: "currentColor" }, s2);
+      text(s2, lx1 + 6, qy(L[0]) + 12, "measured step, LiDAR 2006-09 to 2013-15: " + L[0] + "-" + L[1] + " m", { "font-size": 10, "font-weight": 700 });
+    }
     var cursor = el("line", { y1: Y1, y2: Y0, stroke: "currentColor", "stroke-width": 1, "stroke-dasharray": "2 2" }, s2);
 
     var ctl = document.createElement("div"); ctl.className = "controls";
@@ -252,7 +257,7 @@
     sect(2008);
     var r13 = byY[2013], r10 = byY[2010];
     var note = document.createElement("p");
-    note.innerHTML = "<b>What the arithmetic says.</b> For one summer it lands on the field: about " + r10.mid.toFixed(1) + " m for 2010 against the " + (stepObs ? stepObs.value.join("–") : "1.5–2") + " m step observed. After six seasons (2013) it gives " + r13.cLo.toFixed(0) + "–" + r13.cHi.toFixed(0) + " m, a range that holds the operator's 11 m (C09: \u201cuncovered ice dropped 11 m\u201d, read here as a step)" + src("s1") + ". By 2026 it reaches " + byY[2026].cLo.toFixed(0) + "–" + byY[2026].cHi.toFixed(0) + " m. A plinth that tall would be hard to miss; ice flow, snow laid and pushed every winter, grooming and covers that move between years all wear it down, and none of them is in the model. The LiDAR flights (2006–09, 2014, 2018) can measure the real step: that test is next.";
+    note.innerHTML = (D.lidar ? "<b>What was measured.</b> Two LiDAR surveys of the Province, 2006-09 and 2013-15, about 5 to 8 covered summers apart, show the run standing " + D.lidar.summary.step_m.join("-") + " m above the ice beside it " + tag("Calculated") + src("s11") + ": inside the range of the arithmetic below, and of the operator\u2019s 11 m. See the profiles under this text. " : "") + "<b>What the arithmetic says.</b> For one summer it lands on the field: about " + r10.mid.toFixed(1) + " m for 2010 against the " + (stepObs ? stepObs.value.join("–") : "1.5–2") + " m step observed. After six seasons (2013) it gives " + r13.cLo.toFixed(0) + "–" + r13.cHi.toFixed(0) + " m, a range that holds the operator's 11 m (C09: \u201cuncovered ice dropped 11 m\u201d, read here as a step)" + src("s1") + ". By 2026 it reaches " + byY[2026].cLo.toFixed(0) + "–" + byY[2026].cHi.toFixed(0) + " m. A plinth that tall would be hard to miss; ice flow, snow laid and pushed every winter, grooming and covers that move between years all wear it down, and none of them is in the model. The LiDAR flights (2006–09, 2014, 2018) can measure the real step: that test is next.";
     var lin = document.createElement("p");
     lin.innerHTML = "<b>Why the line is straight, and the real plinth is not.</b> The model adds one summer to the next, so it can only draw a straight line (steeper in warmer summers). A real plinth should bend: the taller it stands, the more its sides are exposed to sun and wind, and the faster the ice creeps outwards under its own weight, so its growth should slow towards a height where gains and losses balance. Where the ice beside the run melts down to rock, the step loses its reference altogether. How fast it bends is " + tag("Not known") + "here: no curve is drawn without a measurement to fit it to.";
     box.appendChild(lin);
@@ -260,6 +265,28 @@
     var lim = document.createElement("p"); lim.className = "small";
     lim.innerHTML = tag("Calculated") + "Units: metres of ice. Check: the model melts about 3 cm w.e. a day on bare ice in summer; AINEVA measured 123 cm w.e. in the 30 days from 31 July 2010 (about 4 cm a day)" + src("s2") + ". Same melt model as above (not tuned); m w.e. converted to m of ice at " + (dens * 1000) + " kg/m³. Assumes the same patch covered every summer, 28 June to 14 September. Not a measurement: an upper limit of what the covers could have kept, if nothing else moved the ice. " + tag("Synthetic") + "2027–2035 repeat the 2016–2024 summers; no warming trend is added.";
     box.appendChild(lim);
+  };
+
+
+  // ---------- 3c. LiDAR profiles across the run (measured) ----------
+  V.lidar = function (box, D) {
+    if (!D.lidar) return;
+    var Lp = D.lidar, W = 680, H = 250, x0 = 46, x1 = 664, y0 = 18, y1 = 222, YMIN = -14, YMAX = 6;
+    var svg = el("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": "Elevation change across the ski run, five transects, LiDAR 2006-09 to 2013-15" }, box);
+    var px = function (o) { return x0 + (x1 - x0) * (o + 200) / 400; }, py = function (v) { return y0 + (y1 - y0) * (YMAX - v) / (YMAX - YMIN); };
+    el("rect", { x: px(-20), y: y0, width: px(20) - px(-20), height: y1 - y0, fill: "currentColor", opacity: 0.1 }, svg);
+    text(svg, px(0), y0 + 12, "run", { "text-anchor": "middle", "font-size": 10, opacity: 0.8 });
+    for (var v = YMIN; v <= YMAX; v += 2) { el("line", { x1: x0, x2: x1, y1: py(v), y2: py(v), stroke: "currentColor", opacity: v === 0 ? 0.6 : 0.1 }, svg); text(svg, x0 - 6, py(v) + 4, (v > 0 ? "+" : "") + v + " m", { "text-anchor": "end", "font-size": 10, opacity: 0.7 }); }
+    [-200, -100, 0, 100, 200].forEach(function (o) { text(svg, px(o), y1 + 16, (o > 0 ? "+" : "") + o + " m", { "text-anchor": "middle", "font-size": 10, opacity: 0.7 }); });
+    text(svg, x0, y1 + 28, "west", { "font-size": 9, opacity: 0.6 }); text(svg, x1, y1 + 28, "east", { "font-size": 9, opacity: 0.6, "text-anchor": "end" });
+    Lp.transects.forEach(function (t, k) {
+      var d = "", prev = false;
+      t.profile.forEach(function (p) { if (p[1] === null) { prev = false; return; } d += (prev ? "L" : "M") + px(p[0]).toFixed(1) + " " + py(Math.max(YMIN, Math.min(YMAX, p[1]))).toFixed(1) + " "; prev = true; });
+      el("path", { d: d, fill: "none", stroke: "currentColor", "stroke-width": 1.2, opacity: 0.35 + 0.13 * k }, svg);
+    });
+    var cap = document.createElement("p"); cap.className = "small";
+    cap.innerHTML = tag("Calculated") + "Change of the ground surface between the Province’s LiDAR surveys of 2006-09 (2 m) and 2013-15 (0.5 m), along five lines across the run, from the upper run (light) to the lower run (dark)" + src("s11") + ". The covered run (grey band) stayed within about −2 to +3 m; the ice beside it dropped by up to about 12.5 m. Rock further away changed by a median of " + Lp.stable_offset_m + " m: the likely offset between the two surveys. " + esc(Lp.flight_dates) + " Snow at flight time, grooming and snowmaking also change the surface.";
+    box.appendChild(cap);
   };
 
   // ---------- 4. Actors ----------
