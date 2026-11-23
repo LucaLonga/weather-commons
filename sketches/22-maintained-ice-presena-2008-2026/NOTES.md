@@ -2,6 +2,12 @@
 
 Read this before working on the sketch. Newest first.
 
+## Next (after session 4, 23 November)
+
+- [ ] Independent validation of the satellite count (2015 orthophoto, dated photos); Landsat 2008–2015; LiDAR plinth test (C09); see PLAN_v6.
+- [ ] Explore: a dedicated layout for the views under the stack (now reused from the overview).
+- [ ] Confirm the thesis author (source 9); find the venue of Betti and Fleck (source 10).
+
 ## Next (before session 2, 9 November)
 
 - [ ] Post the research question and five sources in the community space.
@@ -23,6 +29,9 @@ Read this before working on the sketch. Newest first.
 
 ## Open questions
 
+- Labels to check (2026-11-23): the 2021 Biennale event is "Reported" with the operator page as source (years.json); by the new rule operator statements are "Claimed (operator)". The Consorzio's role ("organises the covering") rests on Betti and Fleck, who wrote with the operator's materials: Reported. The fabric maker link to 2012 rests on AINEVA (Linz) and the thesis (TenCate): Documented.
+- The melt model gives 30% less melt under new fleece (2021 weather) against 52% measured in 2010: albedo alone does not explain the saving; insulation is missing from the model.
+
 - Operator page (read 2026-11-04) gives covered fabric area per year: 40,000 m² (2014) to 110,000 m² (2020–2021). AINEVA gives 76,400 m² in 2010. Different definitions, or a real change? Sentinel-2 can test 2016–2021.
 - Operator attributes to the University of Milan an absorbed solar energy of 36% (covered) vs 57% (uncovered), i.e. albedo ~0.64 vs ~0.43. Candidate values for `data/parameters.json` once confirmed in Senese et al. 2020 / AINEVA 74.
 - Snow is laid on the glacier every winter and the covered mass is kept with snowmaking (operator, citing a 2021 MUSE study). Mention in Situate; find the MUSE study.
@@ -33,7 +42,26 @@ Read this before working on the sketch. Newest first.
 
 ## Done
 
+- 2026-11-23 · Overview rebuilt as "Do glaciers breathe?": eleven breaths, area chart 2008–2026 by kind, satellite and cloud-mask finding, melt model with documented albedos (not tuned), actors diagram (new data/actors.json), result sentences, claims counts, sources 9 and 10. Explore rebuilt as the evidence stack (19 plates, outlines, area scale, observation ticks, per-year images) with the same views below. Shared code in views.js / views.css. GIF reduced under 1 MB. Data from package v11.
+
 - 2026-11-04 · ArchiveBox set up; nine sources archived. Operator page read in full: eight new claims logged in the Track B claims register.
 
 - 2026-11-02 · First page live in my own copy: https://lucalonga.github.io/weather-commons/22-otherweather/
 - 2026-11-04 · Prototype page with synthetic inputs; data catalog of 60 sources.
+
+
+## 2026-11-23 · Close-out of the Sentinel-2 work
+
+- Visible title changed to "Do glaciers breathe?" (subtitle "Maintained ice, Presena 2008–2026"); folder and URLs unchanged.
+- Earth Engine v3.6 final (snapshot https://code.earthengine.google.com/f8e14116f7fcb7becc513334a3ccfc29): lower / best / upper fleece area 2016–2026 in a ski-run zone of 130,587 m² built from 48 scenes; error = fleece found outside the zone. Data: data/area_s2.json, observations_s2.json, outlines_s2.geojson, skirun_zone.geojson, qa.csv. Raw exports archived in ~/Presena_archive with SHA-256 checksums.
+- Method findings: the standard cloud mask flags the fleece as cloud (0.26% vs 11.1% on 2021-08-14); fresh snow, bright rock, cloud shadows and a single-year zone inflated or hid the counts until fixed. Earlier (16 Nov) values were lower for these reasons.
+- Reading (preliminary): cover visible every summer; 2016 claim inside the range, 2021 just above the upper bound, 2017/2019/2020 above it; 2018 not usable (fresh snow). Claim C10: tension.
+- Next: independent validation (2015 orthophoto), Landsat 2008–2015, LiDAR plinth test, real albedos, records requests.
+
+## 2026-11-23 · Three new sources
+
+- **AINEVA Neve e Valanghe 74 (full text, Diolaiuti et al. with the Province of Trento):** documented covers 28,000 m² (2008), 37,300 (2009), 76,400 (2010), 57,800 (2011); glacier 82 ha (1961) → 26 ha (2011); albedo 0.64 on the cover vs 0.43 on the glacier (2010); a step of about 1.5–2 m after summer 2010; fabric TOPTEX GLS 340 (Linz); programme approved by the Province, convention with the lift company; white geotextiles already in the late 1990s.
+- **PhD thesis UniMi (Jan 2013):** 2010 laid 28 June, removed 14 September, ~70,000 m², 500 g/m²; 2012 fabrics cut melt by 62–94%; reused Toptex GLS 340 albedo ~0.43.
+- **Betti and Fleck 2021 (The invisible mountain):** laying May–June; >100,000 m² in 2020; 34 t of plastic, 17 t a year to the Bolzano waste-to-energy plant; shroud metaphor.
+- Updated: years.json (plates 2008, 2009, 2011; glacier areas; pre-2008 covers), claims C04, C08 (supported), C09, C10, C11, C13 (tension), new C15–C20; parameters.json (documented albedos replace placeholders, except snow).
+- To do on the pages: add sources 9 (thesis) and 10 (Betti and Fleck); draw `reported_m2` (2020) as a Reported marker; show `before_2008` and `glacier_area_ha`.

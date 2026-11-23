@@ -31,7 +31,7 @@
    "kind": "Calculated",
    "confidence": "low",
    "basis": "Model runs.",
-   "limit": "Synthetic weather and placeholder albedos for now: gives about 38%."
+   "limit": "Albedos now from field measurements (0.64 new fleece, 0.43 glacier and reused fleece, AINEVA 2010 and thesis 2012); weather reanalysed for 2021 only."
   },
   {
    "id": "A5",
